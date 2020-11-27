@@ -1,4 +1,13 @@
 /**
+ * Features & UX improvements
+ * Don't print empty tasks
+ * Print a confirmation message that you want to delete specific task
+ * Print a confirmation message to delete all tasks (Done)
+ * Print an alert if no tasks and the user clicked clearTasksBtn
+ * Print a html element under tasksFilter when no tasks match the search
+ */
+
+/**
  * Read UIs
  * The form to write a task
  * The input value
@@ -157,11 +166,17 @@ function clearTasks() {
   // tasksList.innerHTML = '' // slower
   // tasksList.style.display = 'none' // not recommended
 
+  const allTasks = document.querySelectorAll('.collection-item')
+
   // Faster
-  if (confirm('Want to delete all tasks?')) {
-    while (tasksList.firstChild) {
-      tasksList.removeChild(tasksList.firstChild)
+  if (allTasks.length > 0) {
+    if (confirm('Want to delete all tasks?')) {
+      while (tasksList.firstChild) {
+        tasksList.removeChild(tasksList.firstChild)
+      }
     }
+  } else {
+    alert('No tasks to be deleted!')
   }
 
   clearTasksFromLocalStorage()
@@ -183,6 +198,7 @@ function filterTasks(e) {
       task.style.display = 'block'
     } else {
       task.style.display = 'none'
+      alert('No tasks available')
     }
   })
 }
