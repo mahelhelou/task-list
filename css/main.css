@@ -1,0 +1,4 @@
+/* Make remove task button clickable */
+.fa-remove {
+  cursor: pointer;
+}

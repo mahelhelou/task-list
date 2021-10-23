@@ -1,10 +1,11 @@
 /**
- * Features & UX improvements
- * Don't print empty tasks
- * Print a confirmation message that you want to delete specific task
- * Print a confirmation message to delete all tasks (Done)
- * Print an alert if no tasks and the user clicked clearTasksBtn
- * Print a html element under tasksFilter when no tasks match the search
+ * Features & UX improvements:
+ * 1. Don't add empty tasks (#)
+ * 2. Show a confirmation message when deleting a task (#)
+ * 3. Show a confirmation message when deleting all tasks (#)
+ * 4. Show an alert if no tasks and the user clicked clearTasksBtn (#)
+ * 5. Print a html element under tasksFilter when no tasks match the search (?)
+ * 6. Make remove task button clickable (#)
  */
 
 /**
@@ -13,7 +14,7 @@
  * The input value
  * The tasks list
  * The clear tasks button
-*/
+ */
 const taskForm = document.querySelector('#task-form')
 const taskInput = document.querySelector('#task-input')
 const tasksList = document.querySelector('.tasks-list')
@@ -22,183 +23,227 @@ const clearTasksBtn = document.querySelector('.clear-tasks')
 
 /**
  * Load all events
- * Opening the html document event
- * Submit the form event
+ * Get tasks from localStorage (Document has been opened)
+ * Submit the form event (To add tasks)
  * Click on remove task button
+		- Event delegation, we put the event to the tasks list because we've multiple tasks with a 'delete-task' class, and they're dynamic and we can add more of them
  * Click on clear tasks button
  * Start searching tasks to filter tasks
  */
 loadEventListeners()
 
 function loadEventListeners() {
-  document.addEventListener('DOMContentLoaded', getTasks)
-  taskForm.addEventListener('submit', addTask)
-  tasksList.addEventListener('click', removeTask)
-  clearTasksBtn.addEventListener('click', clearTasks)
-  tasksFilter.addEventListener('keyup', filterTasks)
+	document.addEventListener('DOMContentLoaded', getTasks)
+	taskForm.addEventListener('submit', addTask)
+	tasksList.addEventListener('click', removeTask)
+	clearTasksBtn.addEventListener('click', clearTasks)
+	tasksFilter.addEventListener('keyup', filterTasks)
 }
 
-// Get stored tasks from local storage
+// Get stored tasks from localStorage
 function getTasks() {
-  let tasks
-  if (!localStorage.getItem('tasks')) {
-    tasks = []
-  } else {
-    tasks = JSON.parse(localStorage.getItem('tasks'))
-  }
+	let tasks
 
-  tasks.forEach((task) => {
-    const taskElement = document.createElement('li')
-    taskElement.className = 'collection-item'
+	if (!localStorage.getItem('tasks')) {
+		tasks = []
+	} else {
+		tasks = JSON.parse(localStorage.getItem('tasks'))
+	}
 
-    const taskContent = document.createTextNode(task)
-    taskElement.appendChild(taskContent)
+	tasks.forEach(task => {
+		/* const taskElement = document.createElement('li')
+     taskElement.className = 'collection-item'
 
-    const taskRemover = document.createElement('a')
-    taskRemover.className = 'delete-task secondary-content'
-    taskRemover.innerHTML = '<i class="fa fa-remove fa-2x"></i>'
+     const taskContent = document.createTextNode(task)
+     taskElement.appendChild(taskContent)
 
-    taskElement.appendChild(taskRemover)
+     const taskRemover = document.createElement('a')
+     taskRemover.className = 'delete-task secondary-content'
+     taskRemover.innerHTML = '<i class="fa fa-remove fa-2x"></i>'
 
-    // show task in the DOM
-    tasksList.appendChild(taskElement)
-  })
+     taskElement.appendChild(taskRemover)
+
+     // show task in the DOM
+     tasksList.appendChild(taskElement) */
+
+		tasksList.insertAdjacentHTML(
+			'beforeend',
+			`
+     <li class="collection-item">
+       ${task}
+       <a class="delete-task secondary-content">
+         <i class="fa fa-remove"></i>
+       </a>
+     </li>
+     `
+		)
+	})
 }
 
 /**
- * (tasksForm @submit)
-    * Create a new task in the DOM
-    * Store created task in local storage
+ * tasksForm => @submit
+ * Create a new task in the DOM
+ * Store created task in the localStorage
  */
 function addTask(e) {
-  e.preventDefault()
+	e.preventDefault()
 
-  /**
-   * Create single task <li>
-   * Create a button to delete the task <a>
-   * Add the element to tasks list
-   */
+	/**
+	 * Create single task <li>
+	 * Create a button to delete the task <a>
+	 * Add the element to tasks list
+	 */
 
-  const taskElement = document.createElement('li')
-  taskElement.className = 'collection-item'
+	// Substituted with insertAdjacentHTML method
+	/* const taskElement = document.createElement('li')
+   taskElement.className = 'collection-item'
 
-  const taskContent = document.createTextNode(taskInput.value)
-  taskElement.appendChild(taskContent)
+   const taskContent = document.createTextNode(taskInput.value)
+   taskElement.appendChild(taskContent)
 
-  const taskRemover = document.createElement('a')
-  taskRemover.className = 'delete-task secondary-content'
-  taskRemover.innerHTML = '<i class="fa fa-remove fa-2x"></i>'
+   const taskRemover = document.createElement('a')
+   taskRemover.className = 'delete-task secondary-content'
+   taskRemover.innerHTML = '<i class="fa fa-remove fa-2x"></i>'
 
-  taskElement.appendChild(taskRemover)
+   taskElement.appendChild(taskRemover) */
 
-  // add task to tasks list (prevent empty task)
-  if (taskInput.value) {
-    tasksList.appendChild(taskElement)
-  } else {
-    alert('Empty task! Please add task content...')
-  }
+	// Add task to the tasks list (prevent empty task)
+	if (taskInput.value) {
+		// tasksList.appendChild(taskElement) // Substituted with addAdjacentHTML
+		tasksList.insertAdjacentHTML(
+			'beforeend',
+			`
+     <li class="collection-item">
+       ${taskInput.value}
+       <a class="delete-task secondary-content">
+         <i class="fa fa-remove"></i>
+       </a>
+     </li>`
+		)
+	} else {
+		alert('Empty task! Please add task content...')
+	}
 
-  // store task in local storage
-  storeTaskInLocalStorage(taskInput.value)
+	// Store task in local storage
+	storeTaskInLocalStorage(taskInput.value)
 
-  taskInput.value = ''
+	// UX: Clear input after adding the task
+	taskInput.value = ''
 }
 
 function storeTaskInLocalStorage(task) {
-  let tasks // init tasks var
+	let tasks
 
-  // read tasks value
-  if (!localStorage.getItem('tasks')) {
-    tasks = []
-  } else {
-    tasks = JSON.parse(localStorage.getItem('tasks'))
-  }
+	if (!localStorage.getItem('tasks')) {
+		tasks = []
+	} else {
+		tasks = JSON.parse(localStorage.getItem('tasks'))
+	}
 
-  if (task) tasks.push(task)
-  localStorage.setItem('tasks', JSON.stringify(tasks)) // local storage uses string data type only
+	/**
+	 * If taskInput.value, add the task to tasks array
+	 * localStorage accepts string data only
+	 * localStorage.setItem('tasks', JSON.stringify(tasks)), the first 'tasks' is the name in the localStorage, the second 'tasks' is the array of tasks
+	 */
+	if (task) tasks.push(task)
+	localStorage.setItem('tasks', JSON.stringify(tasks))
 
-  // tasks.forEach(task => console.log(task)) // UT
+	// tasks.forEach(task => console.log(task)) // UT
 }
 
 /**
  * (taskRemover @click)
-    * Delete the task from DOM
-    * Delete the task from local storage
+ * Delete the task from DOM
+ * Delete the task from local storage
  */
 function removeTask(e) {
-  e.preventDefault()
+	e.preventDefault()
 
-  // remove task item when clicking on (x: delete-task)
-  if (e.target.parentElement.classList.contains('delete-task')) {
-    if (confirm(`Want to delete ${e.target.parentElement.parentElement.textContent}`)) {
-      e.target.parentElement.parentElement.remove()
-    }
-  }
+	// remove task item when clicking on (x: delete-task)
+	if (e.target.parentElement.classList.contains('delete-task')) {
+		if (confirm(`Want to delete ${e.target.parentElement.parentElement.textContent}`)) {
+			e.target.parentElement.parentElement.remove()
+		}
+	}
 
-  removeTaskFromLocalStorage(e.target.parentElement.parentElement)
+	removeTaskFromLocalStorage(e.target.parentElement.parentElement)
 }
 
 function removeTaskFromLocalStorage(task) {
-  let tasks
+	let tasks
 
-  if (!localStorage.getItem('tasks')) {
-    tasks = []
-  } else {
-    tasks = JSON.parse(localStorage.getItem('tasks'))
-  }
+	if (!localStorage.getItem('tasks')) {
+		tasks = []
+	} else {
+		tasks = JSON.parse(localStorage.getItem('tasks'))
+	}
 
-  tasks.forEach((taskItem, index) => {
-    if (task.textContent === taskItem) {
-      tasks.splice(index, 1)
-    }
-  })
+	tasks.forEach((item, index) => {
+		if (task.textContent === item) {
+			tasks.splice(index, 1)
+		}
+	})
 
-  localStorage.setItem('tasks', JSON.stringify(tasks))
+	// Update the tasks in localStorage after deleting the task item
+	localStorage.setItem('tasks', JSON.stringify(tasks))
 }
 
 /**
  * (clearTasksBtn @click)
-    * Clear all tasks from DOM
-    * Clear all tasks from local storage
+ * Clear all tasks from DOM
+ * Clear all tasks from local storage
  */
-function clearTasks() {
-  // console.log(tasksList)
-  // tasksList.innerHTML = '' // slower
-  // tasksList.style.display = 'none' // not recommended
+function clearTasks(e) {
+	// Simplest but the slowest
+	/* if (e.target) {
+		if (confirm('Want to delete all tasks?')) {
+			tasksList.innerHTML = ''
+		}
+	} */
 
-  const allTasks = document.querySelectorAll('.collection-item')
+	// tasksList.style.display = 'none' // not recommended
 
-  // Faster
-  if (allTasks.length > 0) {
-    if (confirm('Want to delete all tasks?')) {
-      while (tasksList.firstChild) {
-        tasksList.removeChild(tasksList.firstChild)
-      }
-    }
-  } else {
-    alert('No tasks to be deleted!')
-  }
+	const allTasks = document.querySelectorAll('.collection-item')
+	// console.log(allTasks.length) // UT
 
-  clearTasksFromLocalStorage()
+	// Faster
+	if (allTasks.length > 0) {
+		if (confirm('Want to delete all tasks?')) {
+			while (tasksList.firstChild) {
+				tasksList.removeChild(tasksList.firstChild)
+			}
+		}
+	} else {
+		// UX: Show an alert when no tasks and the user clicked clearTasksBtn
+		alert('No tasks to be deleted!')
+	}
+
+	clearTasksFromLocalStorage()
 }
 
 function clearTasksFromLocalStorage() {
-  localStorage.clear()
+	localStorage.clear()
 }
 
 // Filter tasks
 function filterTasks(e) {
-  const filterText = e.target.value.toLowerCase()
+	const filterText = e.target.value.toLowerCase()
 
-  const allTasks = document.querySelectorAll('.collection-item')
-  allTasks.forEach((task) => {
-    const taskItem = task.firstChild.textContent
-    // console.log(taskItem) // Refactor later
-    if (taskItem.toLowerCase().indexOf(filterText) !== -1) {
-      task.style.display = 'block'
-    } else {
-      task.style.display = 'none'
-      alert('No tasks available')
-    }
-  })
+	const allTasks = document.querySelectorAll('.collection-item')
+	allTasks.forEach(task => {
+		// What's inside each task in allTasks
+		const taskItem = task.firstChild.textContent
+		// console.log(taskItem) // Refactor later
+		if (taskItem.toLowerCase().indexOf(filterText) !== -1) {
+			task.style.display = 'block'
+		} else {
+			task.style.display = 'none'
+			tasksList.insertAdjacentHTML(
+				'beforeend',
+				`
+			<li class="collection-item">No tasks match your search term!</li>
+			`
+			)
+		}
+	})
 }
