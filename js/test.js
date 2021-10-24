@@ -1,157 +1,164 @@
-// UIs
-const taskForm = document.querySelector('#task-form')
-const taskInput = document.querySelector('#task-input')
-const tasksFilter = document.querySelector('#filter')
-let tasksList = document.querySelector('.tasks-list')
-const deleteTask = document.querySelector('.delete-task')
-const clearTasksBtn = document.querySelector('.clear-tasks')
+// Define UI Vars
+const form = document.querySelector('#task-form')
+const taskList = document.querySelector('.collection')
+const clearBtn = document.querySelector('.clear-tasks')
+const filter = document.querySelector('#filter')
+const taskInput = document.querySelector('#task')
 
-// Event listeners
-// 5. Get tasks from localStorage
-document.addEventListener('DOMContentLoaded', getTasks)
-// 1. Add a new task
-taskForm.addEventListener('submit', addTask)
-// 2. Delete task
-tasksList.addEventListener('click', deleteCurrentTask)
-// 3. Clear all tasks
-clearTasksBtn.addEventListener('click', clearTasks)
-// 4. Filter tasks
-tasksFilter.addEventListener('keyup', filterTasks)
+// Load all event listeners
+loadEventListeners()
 
-// Get tasks from localStorage
+// Load all event listeners
+function loadEventListeners() {
+	// DOM Load event
+	document.addEventListener('DOMContentLoaded', getTasks)
+	// Add task event
+	form.addEventListener('submit', addTask)
+	// Remove task event
+	taskList.addEventListener('click', removeTask)
+	// Clear task event
+	clearBtn.addEventListener('click', clearTasks)
+	// Filter tasks event
+	filter.addEventListener('keyup', filterTasks)
+}
+
+// Get Tasks from LS
 function getTasks() {
 	let tasks
-
-	if (!localStorage.getItem('tasks')) {
+	if (localStorage.getItem('tasks') === null) {
 		tasks = []
 	} else {
 		tasks = JSON.parse(localStorage.getItem('tasks'))
 	}
 
-	tasks.forEach(task => {
-		tasksList.insertAdjacentHTML(
-			'beforeend',
-			`
-		<li class="collection-item">
-			${task}
-			<a class="delete-task secondary-content">
-				<i class="fa fa-remove"></i>
-			</a>
-		</li>
-		`
-		)
+	tasks.forEach(function (task) {
+		// Create li element
+		const li = document.createElement('li')
+		// Add class
+		li.className = 'collection-item'
+		// Create text node and append to li
+		li.appendChild(document.createTextNode(task))
+		// Create new link element
+		const link = document.createElement('a')
+		// Add class
+		link.className = 'delete-item secondary-content'
+		// Add icon html
+		link.innerHTML = '<i class="fa fa-remove"></i>'
+		// Append the link to li
+		li.appendChild(link)
+
+		// Append li to ul
+		taskList.appendChild(li)
 	})
 }
 
+// Add Task
 function addTask(e) {
-	e.preventDefault()
-
-	if (!taskInput.value) {
-		alert('Empty task! Please add your task...')
+	if (taskInput.value === '') {
+		alert('Add a task')
 	}
 
-	tasksList.insertAdjacentHTML(
-		'beforeend',
-		`
-  <li class="collection-item">
-    ${taskInput.value}
-    <a class="delete-task secondary-content">
-      <i class="fa fa-remove"></i>
-    </a>
-  </li>
-  `
-	)
+	// Create li element
+	const li = document.createElement('li')
+	// Add class
+	li.className = 'collection-item'
+	// Create text node and append to li
+	li.appendChild(document.createTextNode(taskInput.value))
+	// Create new link element
+	const link = document.createElement('a')
+	// Add class
+	link.className = 'delete-item secondary-content'
+	// Add icon html
+	link.innerHTML = '<i class="fa fa-remove"></i>'
+	// Append the link to li
+	li.appendChild(link)
 
-	// Store task in the localStorage
-	addTaskToLocalStorage(taskInput.value)
+	// Append li to ul
+	taskList.appendChild(li)
 
-	// UX: Clear input after adding the task
+	// Store in LS
+	storeTaskInLocalStorage(taskInput.value)
+
+	// Clear input
 	taskInput.value = ''
+
+	e.preventDefault()
 }
 
-function addTaskToLocalStorage(task) {
+// Store Task
+function storeTaskInLocalStorage(task) {
 	let tasks
-
-	if (!localStorage.getItem('tasks')) {
+	if (localStorage.getItem('tasks') === null) {
 		tasks = []
 	} else {
 		tasks = JSON.parse(localStorage.getItem('tasks'))
 	}
 
-	if (task) tasks.push(task)
+	tasks.push(task)
+
 	localStorage.setItem('tasks', JSON.stringify(tasks))
 }
 
-// Delete current task (On click)
-function deleteCurrentTask(e) {
-	e.preventDefault()
+// Remove Task
+function removeTask(e) {
+	if (e.target.parentElement.classList.contains('delete-item')) {
+		if (confirm('Are You Sure?')) {
+			e.target.parentElement.parentElement.remove()
 
-	if (e.target.parentElement.classList.contains('delete-task')) {
-		// console.log(e.target) // UT
-		e.target.parentElement.parentElement.remove()
+			// Remove from LS
+			removeTaskFromLocalStorage(e.target.parentElement.parentElement)
+		}
 	}
-
-	// Delete task from localStorage
-	deleteTaskFromLocalStorage(e.target.parentElement.parentElement)
 }
 
-function deleteTaskFromLocalStorage(task) {
+// Remove from LS
+function removeTaskFromLocalStorage(taskItem) {
 	let tasks
-
-	if (!localStorage.getItem('tasks')) {
+	if (localStorage.getItem('tasks') === null) {
 		tasks = []
 	} else {
 		tasks = JSON.parse(localStorage.getItem('tasks'))
 	}
 
-	tasks.forEach((taskItem, index) => {
-		if (task.textContent === taskItem) {
+	tasks.forEach(function (task, index) {
+		if (taskItem.textContent === task) {
 			tasks.splice(index, 1)
 		}
 	})
 
-	// Override localStorage data
 	localStorage.setItem('tasks', JSON.stringify(tasks))
 }
 
-// Clear all tasks
-function clearTasks(e) {
-	e.preventDefault()
+// Clear Tasks
+function clearTasks() {
+	// taskList.innerHTML = '';
 
-	// Simplest way but the slowest
-	/* if (confirm('Want to delete all tasks?')) {
-		tasksList.innerHTML = ''
-	} */
-
-	const allTasks = document.querySelectorAll('.collection-item')
-	console.log(allTasks.length)
-
-	if (allTasks.length > 0) {
-		if (confirm('Want to delete all tasks?')) {
-			while (tasksList.firstChild) {
-				tasksList.removeChild(tasksList.firstChild)
-			}
-		}
+	// Faster
+	while (taskList.firstChild) {
+		taskList.removeChild(taskList.firstChild)
 	}
 
+	// https://jsperf.com/innerhtml-vs-removechild
+
+	// Clear from LS
 	clearTasksFromLocalStorage()
 }
 
+// Clear Tasks from LS
 function clearTasksFromLocalStorage() {
 	localStorage.clear()
 }
 
-// Filter tasks
+// Filter Tasks
 function filterTasks(e) {
-	const term = e.target.value.toLowerCase()
-	const allTasks = document.querySelectorAll('.collection-item')
+	const text = e.target.value.toLowerCase()
 
-	allTasks.forEach(task => {
-		if (task.firstChild.textContent.indexOf(term) !== -1) {
+	document.querySelectorAll('.collection-item').forEach(function (task) {
+		const item = task.firstChild.textContent
+		if (item.toLowerCase().indexOf(text) != -1) {
 			task.style.display = 'block'
 		} else {
 			task.style.display = 'none'
 		}
 	})
-	// console.log(searchInput) // UT
 }
