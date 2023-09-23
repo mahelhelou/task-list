@@ -22,14 +22,14 @@ const tasksFilter = document.querySelector('#filter')
 const clearTasksBtn = document.querySelector('.clear-tasks')
 
 /**
-	* Load all events
-	* Get tasks from localStorage (Document has been opened)
-	* Submit the form event (To add tasks)
-	* Click on remove task button
-		 - Event delegation, we put the event to the tasks list because we've multiple tasks with a 'delete-task' class, and they're dynamic and we can add more of them
-	* Click on clear tasks button
-	* Start searching tasks to filter tasks
-	*/
+	 * Load all events
+	 * Get tasks from localStorage (Document has been opened)
+	 * Submit the form event (To add tasks)
+	 * Click on remove task button
+			- Event delegation, we put the event to the tasks list because we've multiple tasks with a 'delete-task' class, and they're dynamic and we can add more of them
+	 * Click on clear tasks button
+	 * Start searching tasks to filter tasks
+	 */
 loadEventListeners()
 
 function loadEventListeners() {
@@ -52,30 +52,30 @@ function getTasks() {
 
 	tasks.forEach(task => {
 		/* const taskElement = document.createElement('li')
-			taskElement.className = 'collection-item'
+			 taskElement.className = 'collection-item'
 
-			const taskContent = document.createTextNode(task)
-			taskElement.appendChild(taskContent)
+			 const taskContent = document.createTextNode(task)
+			 taskElement.appendChild(taskContent)
 
-			const taskRemover = document.createElement('a')
-			taskRemover.className = 'delete-task secondary-content'
-			taskRemover.innerHTML = '<i class="fa fa-remove fa-2x"></i>'
+			 const taskRemover = document.createElement('a')
+			 taskRemover.className = 'delete-task secondary-content'
+			 taskRemover.innerHTML = '<i class="fa fa-remove fa-2x"></i>'
 
-			taskElement.appendChild(taskRemover)
+			 taskElement.appendChild(taskRemover)
 
-			// show task in the DOM
-			tasksList.appendChild(taskElement) */
+			 // show task in the DOM
+			 tasksList.appendChild(taskElement) */
 
 		tasksList.insertAdjacentHTML(
 			'beforeend',
 			`
-			<li class="collection-item">
-				${task}
-				<a class="delete-task secondary-content">
-					<i class="fa fa-remove"></i>
-				</a>
-			</li>
-			`
+			 <li class="collection-item">
+				 <span class="collection-item-text">${task}</span>
+				 <a class="delete-task secondary-content">
+					 <i class="fa fa-remove"></i>
+				 </a>
+			 </li>
+			 `
 		)
 	})
 }
@@ -96,16 +96,16 @@ function addTask(e) {
 
 	// Substituted with insertAdjacentHTML method
 	/* const taskElement = document.createElement('li')
-		taskElement.className = 'collection-item'
+		 taskElement.className = 'collection-item'
 
-		const taskContent = document.createTextNode(taskInput.value)
-		taskElement.appendChild(taskContent)
+		 const taskContent = document.createTextNode(taskInput.value)
+		 taskElement.appendChild(taskContent)
 
-		const taskRemover = document.createElement('a')
-		taskRemover.className = 'delete-task secondary-content'
-		taskRemover.innerHTML = '<i class="fa fa-remove fa-2x"></i>'
+		 const taskRemover = document.createElement('a')
+		 taskRemover.className = 'delete-task secondary-content'
+		 taskRemover.innerHTML = '<i class="fa fa-remove fa-2x"></i>'
 
-		taskElement.appendChild(taskRemover) */
+		 taskElement.appendChild(taskRemover) */
 
 	// Add task to the tasks list (prevent empty task)
 	if (taskInput.value) {
@@ -113,12 +113,12 @@ function addTask(e) {
 		tasksList.insertAdjacentHTML(
 			'beforeend',
 			`
-			<li class="collection-item">
-				${taskInput.value}
-				<a class="delete-task secondary-content">
-					<i class="fa fa-remove"></i>
-				</a>
-			</li>`
+			 <li class="collection-item">
+				 ${taskInput.value}
+				 <a class="delete-task secondary-content">
+					 <i class="fa fa-remove"></i>
+				 </a>
+			 </li>`
 		)
 	} else {
 		alert('Empty task! Please add task content...')
@@ -161,7 +161,7 @@ function removeTask(e) {
 
 	// Remove task item when clicking on (x: delete-task)
 	if (e.target.parentElement.classList.contains('delete-task')) {
-		if (confirm(`Want to delete ${e.target.parentElement.parentElement.textContent}`)) {
+		if (confirm(`Want to delete this task? \n "${e.target.parentElement.parentElement.querySelector('.collection-item-text').innerHTML}"`)) {
 			// Remove task from DOM
 			e.target.parentElement.parentElement.remove()
 
@@ -200,10 +200,10 @@ function removeTaskFromLocalStorage(taskItem) {
 function clearTasks() {
 	// Simplest but the slowest
 	/* if (e.target) {
-		 if (confirm('Want to delete all tasks?')) {
-			 tasksList.innerHTML = ''
-		 }
-	 } */
+			if (confirm('Want to delete all tasks?')) {
+				tasksList.innerHTML = ''
+			}
+		} */
 
 	// tasksList.style.display = 'none' // not recommended
 
@@ -219,7 +219,7 @@ function clearTasks() {
 		}
 	} else {
 		// UX: Show an alert when no tasks and the user clicked clearTasksBtn
-		alert('No tasks to be deleted!')
+		alert('Your task list is empty.')
 	}
 
 	clearTasksFromLocalStorage()
@@ -243,7 +243,7 @@ function filterTasks(e) {
 			task.style.display = 'block'
 		} else {
 			task.style.display = 'none'
-			alert('No tasks match your search!')
+			// alert('No tasks match your search!')
 		}
 	})
 }
