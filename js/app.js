@@ -114,7 +114,7 @@ function addTask(e) {
 			'beforeend',
 			`
 			 <li class="collection-item">
-				 ${taskInput.value}
+				 <span class="collection-item-text">${taskInput.value}</span>
 				 <a class="delete-task secondary-content">
 					 <i class="fa fa-remove"></i>
 				 </a>
